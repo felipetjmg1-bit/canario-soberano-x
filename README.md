@@ -1,66 +1,50 @@
-# Canário Soberano X | Arquitetura de IA multimodal em desenvolvimento
+# Canário Soberano X
 
-<p align="center"><img src="PROJECT-OVERVIEW.svg" alt="Diagrama explicativo de Canário Soberano X" width="100%"></p>
+<p align="center"><img src="PROJECT-OVERVIEW.svg" alt="Diagrama explicativo do Canário Soberano X" width="100%"></p>
 
+**Impulso Digital Soluções em IA** · Python · CPU-first · multimodal · XAI · licença Apache-2.0
 
-Repositório inicial para estruturar a pesquisa e o desenvolvimento do Canário Soberano X, conceito de assistente de IA adaptativa com foco em interação multimodal, avaliação de respostas, rastreabilidade e controle do contexto.
+Núcleo executável para validação e orquestração de entradas de texto, imagem, áudio e vídeo, com adaptadores explícitos, manifesto de auditoria e explicações sobre o que foi ou não processado.
 
-> **Maturidade:** documentação de arquitetura em desenvolvimento. Não há implementação executável publicada neste commit. As capacidades abaixo são objetivos de pesquisa e desenvolvimento, não recursos operacionais comprovados.
+## Estado desta entrega
 
-## Objetivos do projeto
+O repositório agora contém um núcleo Python testável. O processamento de mídia é feito por adaptadores que precisam ser instalados e configurados pelo integrador. Sem um adaptador, o sistema valida a referência e informa claramente que não realizou inferência. Não há modelo multimodal proprietário embutido, nem download automático de mídia.
 
-- Definir uma base modular para interação por texto e, futuramente, outras modalidades.
-- Planejar mecanismos de contexto e memória com controles explícitos.
-- Avaliar consistência, segurança, utilidade e incerteza das respostas.
-- Documentar decisões de arquitetura e limites de cada experimento.
-- Criar testes reproduzíveis antes de ampliar o escopo.
+## Instalação
 
-## Arquitetura de referência proposta
-
-```mermaid
-flowchart TD
-  I[Entradas multimodais] --> V[Validação e normalização]
-  V --> C[Gestão de contexto]
-  C --> O[Orquestrador]
-  O --> A[Adaptadores de modelos]
-  O --> T[Ferramentas autorizadas]
-  A --> E[Avaliação e explicabilidade]
-  T --> E
-  E --> R[Resposta e registro auditável]
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+pytest -q
 ```
 
-Esta representação é conceitual. Integrações com modelos, ferramentas, memória persistente ou dispositivos somente deverão ser declaradas como disponíveis depois de implementadas e testadas.
+## Exemplo
 
-## Requisitos de qualidade
+```python
+from canario_soberano import CanarioEngine, MultimodalRequest
 
-- Separar dados de entrada, instruções, ferramentas e resultados.
-- Validar tipos, tamanho e origem dos dados.
-- Aplicar limites de execução e permissões mínimas às ferramentas.
-- Evitar armazenar dados sensíveis sem finalidade e consentimento apropriados.
-- Registrar versões de modelos, parâmetros e resultados de avaliação.
-- Disponibilizar testes unitários e de integração para cada módulo.
+request = MultimodalRequest.from_dict({
+    "request_id": "demo-001",
+    "items": [
+        {"modality": "text", "content": "Descreva o cenário"},
+        {"modality": "image", "uri": "https://example.org/frame.jpg",
+         "mime_type": "image/jpeg"}
+    ]
+})
+result = CanarioEngine().process(request)
+print(result.to_dict())
+```
 
-## Roteiro de desenvolvimento
+## Contratos e segurança
 
-- [ ] Especificar casos de uso e critérios de sucesso.
-- [ ] Definir arquitetura e contratos internos.
-- [ ] Implementar um protótipo textual mínimo.
-- [ ] Criar conjunto de testes e avaliações de segurança.
-- [ ] Projetar a expansão multimodal por adaptadores independentes.
-- [ ] Documentar memória, retenção, privacidade e exclusão de dados.
-- [ ] Publicar resultados e limitações de forma reproduzível.
+- Modalidades aceitas: `text`, `image`, `audio`, `video`.
+- Texto tem limite de 20.000 caracteres; até 16 itens por requisição.
+- Mídias são referenciadas por URI HTTPS ou arquivo local. O núcleo não baixa URLs.
+- Adaptadores implementam `supports(modality)` e `process(item)`.
+- O manifesto SHA-256 identifica os metadados normalizados da entrada, não o conteúdo binário.
+- Não envie segredos, dados pessoais ou arquivos sensíveis sem controles de acesso, base legal e retenção.
 
-## Como executar
+## Limites conhecidos
 
-Ainda não existe um comando de instalação ou execução porque o repositório não contém aplicação executável neste commit.
-
-## Contribuição
-
-Propostas devem incluir motivação, escopo, riscos, testes e limitações. Não envie chaves de API, credenciais, dados pessoais ou arquivos confidenciais.
-
-## Licença
-
-Nenhuma licença foi definida neste commit. Não presuma permissão de reutilização até que um arquivo de licença seja adicionado.
-
-
-**Empresa responsável:** Impulso Digital Soluções em IA.
+Este núcleo não contém modelos de visão, fala ou vídeo. A arquitetura permite integrar modelos locais ou serviços externos por adaptadores, mas cada integração precisa de testes, avaliação de qualidade, revisão de segurança e documentação próprias. Não é uma solução certificada nem pronta para decisões de alto impacto.
