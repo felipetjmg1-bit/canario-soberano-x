@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
+from hashlib import sha256
 from typing import Any
 from urllib.parse import urlparse
 
@@ -38,6 +39,14 @@ class ModalityItem:
             raise RequestValidationError(
                 "Mídias devem ser referenciadas por URI; bytes não são aceitos neste núcleo."
             )
+        if self.mime_type:
+            expected = {
+                Modality.IMAGE: "image/",
+                Modality.AUDIO: "audio/",
+                Modality.VIDEO: "video/",
+            }[self.modality]
+            if not self.mime_type.startswith(expected):
+                raise RequestValidationError("MIME type incompatível com a modalidade.")
         if not self.uri:
             raise RequestValidationError("Itens de mídia precisam de URI.")
         parsed = urlparse(self.uri)
@@ -51,12 +60,15 @@ class ModalityItem:
             raise RequestValidationError("MIME type incompatível com mídia.")
 
     def public_metadata(self) -> dict[str, Any]:
-        return {
+        metadata = {
             "modality": self.modality.value,
             "mime_type": self.mime_type,
             "uri_present": bool(self.uri),
             "metadata_keys": sorted(self.metadata.keys()),
         }
+        if self.modality is Modality.TEXT and isinstance(self.content, str):
+            metadata["content_sha256"] = sha256(self.content.encode("utf-8")).hexdigest()
+        return metadata
 
 
 @dataclass(frozen=True)
