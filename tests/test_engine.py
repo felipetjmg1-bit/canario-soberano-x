@@ -52,3 +52,24 @@ def test_video_modality_is_supported_as_reference():
                    "mime_type": "video/mp4"}]
     })
     assert request.items[0].modality is Modality.VIDEO
+
+
+
+def test_text_content_changes_audit_manifest_hash():
+    first = MultimodalRequest.from_dict({
+        "items": [{"modality": "text", "content": "primeiro"}]
+    })
+    second = MultimodalRequest.from_dict({
+        "items": [{"modality": "text", "content": "segundo"}]
+    })
+    first_hash = CanarioEngine().process(first).audit["input_manifest_sha256"]
+    second_hash = CanarioEngine().process(second).audit["input_manifest_sha256"]
+    assert first_hash != second_hash
+
+
+def test_rejects_mime_type_from_another_modality():
+    with pytest.raises(RequestValidationError):
+        MultimodalRequest.from_dict({
+            "items": [{"modality": "audio", "uri": "https://example.org/a.wav",
+                       "mime_type": "image/png"}]
+        })
