@@ -1,11 +1,11 @@
-# Canário Soberano X | Projeto experimental de IA multimodal
+# Canário Soberano X | Arquitetura de IA multimodal em desenvolvimento
 
 <p align="center"><img src="PROJECT-OVERVIEW.svg" alt="Diagrama explicativo de Canário Soberano X" width="100%"></p>
 
 
 Repositório inicial para estruturar a pesquisa e o desenvolvimento do Canário Soberano X, conceito de assistente de IA adaptativa com foco em interação multimodal, avaliação de respostas, rastreabilidade e controle do contexto.
 
-> **Maturidade:** repositório inicial de documentação. Não há implementação executável publicada neste commit. As capacidades abaixo são objetivos de pesquisa e desenvolvimento, não recursos operacionais comprovados.
+> **Maturidade:** documentação de arquitetura em desenvolvimento. Não há implementação executável publicada neste commit. As capacidades abaixo são objetivos de pesquisa e desenvolvimento, não recursos operacionais comprovados.
 
 ## Objetivos do projeto
 
