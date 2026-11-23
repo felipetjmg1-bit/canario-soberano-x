@@ -48,3 +48,8 @@ print(result.to_dict())
 ## Limites conhecidos
 
 Este núcleo não contém modelos de visão, fala ou vídeo. A arquitetura permite integrar modelos locais ou serviços externos por adaptadores, mas cada integração precisa de testes, avaliação de qualidade, revisão de segurança e documentação próprias. Não é uma solução certificada nem pronta para decisões de alto impacto.
+
+
+## Fluxo passo a passo
+
+Consulte o [guia textual com as etapas do projeto](docs/PROCESSO-PASSO-A-PASSO.md). O infográfico acima resume visualmente o mesmo fluxo.
